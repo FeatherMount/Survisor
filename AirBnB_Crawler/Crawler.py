@@ -3,6 +3,7 @@ from bs4 import BeautifulSoup as bs
 import datetime
 from datetime import timedelta
 import pymongo
+import time
 
 CONST_DATE_WINDOW = 1
 CONST_DURATION_WINDOW = 1
@@ -50,18 +51,18 @@ class Crawler(object):
         # execute the crawler
         for i in range(totalPage):
             page = i + 1
-            if (page % 20 != 1): 
-                continue
             url = baseUrl.format(checkinDate.month, checkinDate.day, checkinDate.year, 
                         checkoutDate.month, checkoutDate.day, checkoutDate.year, 
                         page)            
             request = urllib.request.Request(url, headers={'User-Agent' : "Magic Browser"})
-            response = urllib.request.urlopen(request)
+            # in order not to be banned sleep for a second here
+            time.sleep(1);
+            response = urllib.request.urlopen(request, timeout = 5)
             soup = bs(response.read())
             listings = soup.findAll('div', {'class':"listing"})
-            print ('processing {} items'.format(len(listings)))
+            print ('page {}: processing {} items'.format(page, len(listings)))
             for listing in listings:
-                print(listing.attrs)
+                # print(listing.attrs)
                 # push listing.attrs to MongoDB
                 self.ablists.insert(listing.attrs)
 
