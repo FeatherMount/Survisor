@@ -5,8 +5,8 @@ from datetime import timedelta
 import pymongo
 import time
 
-CONST_DATE_WINDOW = 1
-CONST_DURATION_WINDOW = 1
+CONST_DATE_WINDOW = 30
+CONST_DURATION_WINDOW = 7
 
 class Crawler(object):
     """
@@ -47,7 +47,7 @@ class Crawler(object):
         allLists = pagingInfo.findAll('li') # confusing name here: list refers to <li>
         totalPage = int(allLists[len(allLists) - 2].a.string)
         
-        print('there are totally {} pages for this date and duration'.format(totalPage))        
+        print('there are totally {} pages for {} and {}'.format(totalPage, checkinDate, duration))        
         # execute the crawler
         for i in range(totalPage):
             page = i + 1
@@ -57,14 +57,17 @@ class Crawler(object):
             request = urllib.request.Request(url, headers={'User-Agent' : "Magic Browser"})
             # in order not to be banned sleep for a second here
             time.sleep(1);
-            response = urllib.request.urlopen(request, timeout = 5)
-            soup = bs(response.read())
-            listings = soup.findAll('div', {'class':"listing"})
-            print ('page {}: processing {} items'.format(page, len(listings)))
-            for listing in listings:
-                # print(listing.attrs)
-                # push listing.attrs to MongoDB
-                self.ablists.insert(listing.attrs)
+            try:
+                response = urllib.request.urlopen(request, timeout = 5)
+                soup = bs(response.read())
+                listings = soup.findAll('div', {'class':"listing"})
+                print ('page {}: processing {} items'.format(page, len(listings)))
+                for listing in listings:
+                    # print(listing.attrs)
+                    # push listing.attrs to MongoDB
+                    self.ablists.insert(listing.attrs)
+            except:
+                print("processing error: {}".format(url))
 
 if __name__ == '__main__':
     crawler = Crawler()
