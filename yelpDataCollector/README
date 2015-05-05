@@ -1,0 +1,24 @@
+DB name:
+	yelpDB
+
+Total record number:
+	201950
+
+Column name:
+	_id
+	name
+	rating
+	latitude
+	longitude
+	zip
+
+One record example:
+	{ "_id" : ObjectId("55469ad5300446310dd2c3c3"), "name" : "Cookshop", "rating" : 4, "latitude" : 40.7454262, "longitude" : -74.0056076, "zip" : 10001 }
+
+
+
+NOTES:
+Required lib to run the program:
+	json_simple-1.1.jar
+	scribe-1.3.5.jar
+	mongo-java-driver-2.11.3.jar
