@@ -52,7 +52,12 @@ Column name:
 One record example:
 
 ```
-    { "_id" : ObjectId("55469ad5300446310dd2c3c3"), "name" : "Cookshop", "rating" : 4, "latitude" : 40.7454262, "longitude" : -74.0056076, "zip" : 10001 }
+    { "_id" : ObjectId("55469ad5300446310dd2c3c3"), 
+      "name" : "Cookshop", 
+      "rating" : 4, 
+      "latitude" : 40.7454262, 
+      "longitude" : -74.0056076, 
+      "zip" : 10001 }
 ```
 
 
@@ -63,3 +68,34 @@ Required lib to run the program:
     mongo-java-driver-2.11.3.jar
 
 ### NYC311
+
+Many kinds of complain data are collected. 
+
+```
+# Get Complaint Type from: https://nycopendata.socrata.com/Social-Services/311-Complaint-Types/h4xh-jcuz
+# https://nycopendata.socrata.com/Social-Services/311-Service-Requests-from-2010-to-Present/erm2-nwe9
+complaint_type = ["Air Quality",
+        "Building/Use", #Illegal Use of the Unit
+        "Electrical", #Electrical Wiring Defective Exposed
+        "Noise",
+        "Rodent",
+        "Sewer",
+        "Sanitation",
+        "Street Condition",
+        "Water System"]
+```
+
+Here is a sample record. 
+
+```
+{
+    "_id": {
+        "$oid": "554515181d41c86c75a1fe9d"
+    },
+    "addr": "19 EAST 127 STREET",
+    "zip": "10035",
+    "long": "-73.94056006628847",
+    "lat": "40.807404902674044",
+    "type": "Noise - Street/Sidewalk"
+}
+```
