@@ -16,7 +16,7 @@ def main():
     # scatter plot all latitude and longitude
     cleaner = DataCleaner()
     # use the following three function calls to check the density of the data
-    #cleaner.plot311()
+    cleaner.plot311()
     #cleaner.plotAb()
     #cleaner.plotYelp()
 
@@ -103,8 +103,9 @@ class DataCleaner(object):
         plt.scatter(lat, lng, s = 2)
         show()
 
-    def pre-processing(self):
-        pass
+    #def pre-processing(self):
+    #    # db.ablists.distinct("data-lng",{"data-lng":{$lt: "-73.95", $gt: "-73.92"}, "data-lat":{$lt : "40.82", $gt: "40.81"}})
+    #    pass
 
 if __name__ == '__main__':
     main()
