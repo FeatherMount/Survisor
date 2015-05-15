@@ -31,10 +31,49 @@ class Crawler(object):
             baseDate = baseDate + increment
         self.client.close()
 
+    def crawl_one(self, _id, checkinDate, duration):
+        baseUrl = "https://www.airbnb.com/rooms/{}?checkin={}%2F{}%2F{}&checkout={}%2F{}%2F{}"
+        #url = "https://www.airbnb.com/rooms/246030?checkin=05%2F15%2F2015&checkout=05%2F16%2F2015&s=cbcd"
+        checkoutDate = checkinDate + duration
+        url = baseUrl.format(_id, checkinDate.month, checkinDate.day, checkinDate.year,
+                        checkoutDate.month, checkoutDate.day, checkoutDate.year)
+
+        try:
+            request = urllib.request.Request(url, headers={'User-Agent' : "Magic Browser"})
+            response = urllib.request.urlopen(request)
+            soup = bs(response.read())
+            price = soup.find('div', {'class':'subnav-container'}).find('span', {'class' : 'price-amount h3'})
+            for p in price:
+                price = p.replace("\n", "").replace(" ", "")
+            neighborhood = soup.find('h3', {'class':'seo-text'})
+            for nb in neighborhood:
+                neighborhood = nb.replace("\n", "").replace(" ", "")
+            rating = "n/a"
+            metas = soup.findAll('meta')
+            for meta in metas:
+                if not meta.get('property'):
+                    continue
+                elif meta['property'] == "airbedandbreakfast:rating":
+                    rating = meta['content']
+                elif meta['property'] == "og:image":
+                    photo = meta['content']
+                elif meta['property'] == "og:description":
+                    desc = meta['content']
+            output = {}
+            output['price'] = price
+            output['neighborhood'] = neighborhood
+            output['rating'] = rating
+            output['photo'] = photo
+            output['desc'] = desc
+            # print(output)
+        except:
+            print("processing one URL error: {}".format(url))
+
     def crawl(self, currDate, duration):
         checkinDate = currDate;
         checkoutDate = checkinDate + duration
-        baseUrl = ("https://www.airbnb.com/s/New-York--NY--United-States?"
+        #baseUrl = ("https://www.airbnb.com/s/New-York--NY--United-States?"
+        baseUrl = ("https://www.airbnb.com/s/Manhattan--New-York--NY--United-States?"
                 "checkin={}%2F{}%2F{}&checkout={}%2F{}%2F{}"
                 "&source=bb&ss_id=troj9a2t&page={}")
         url = baseUrl.format(checkinDate.month, checkinDate.day, checkinDate.year, 
@@ -71,4 +110,7 @@ class Crawler(object):
 
 if __name__ == '__main__':
     crawler = Crawler()
-    crawler.crawlBatch()
+    #crawler.crawlBatch()
+    currDate = datetime.date.today()
+    duration = timedelta(days=1)
+    crawler.crawl_one("246030", currDate, duration)
