@@ -65,7 +65,8 @@ class Crawler(object):
             output['rating'] = rating
             output['photo'] = photo
             output['desc'] = desc
-            # print(output)
+            #print(output)
+            return output
         except:
             print("processing one URL error: {}".format(url))
 
