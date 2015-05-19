@@ -6,7 +6,7 @@ import pymongo
 import time
 
 CONST_DATE_WINDOW = 30
-CONST_DURATION_WINDOW = 7
+CONST_DURATION_WINDOW = 1
 
 class Crawler(object):
     """
@@ -111,7 +111,7 @@ class Crawler(object):
 
 if __name__ == '__main__':
     crawler = Crawler()
-    #crawler.crawlBatch()
-    currDate = datetime.date.today()
-    duration = timedelta(days=1)
-    crawler.crawl_one("246030", currDate, duration)
+    crawler.crawlBatch()
+    #currDate = datetime.date.today()
+    #duration = timedelta(days=1)
+    #crawler.crawl_one("246030", currDate, duration)

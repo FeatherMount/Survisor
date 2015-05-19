@@ -33,6 +33,7 @@ class DataCleaner(object):
         self.ablists = self.db['ablists']
         self.yelp = self.db['yelpDB']
         self.complaint = self.db['db311']
+        self.features = self.db['features']
 
     def plot311(self):
         lat = np.array([])
@@ -106,10 +107,7 @@ class DataCleaner(object):
 
     def pre_process(self):
         # obtain all the data-id first
-        i= 0
         for data_id in self.ablists.distinct("data-id"):
-            if (i == 2):
-                break
             list_item = self.ablists.find_one({"data-id":data_id})
             latitude = float(list_item["data-lat"])
             longitude = float(list_item["data-lng"])
@@ -143,29 +141,28 @@ class DataCleaner(object):
             nrst = 0
             ar = 0
 
-            for entry in self.complaint.find():
+            for entry in self.complaint.find({"long":{"$lt": str(longitude - CONST_PATCH_SIZE), "$gt": str(longitude + CONST_PATCH_SIZE)}, 
+                "lat":{"$lt" : str(latitude + CONST_PATCH_SIZE), "$gt": str(latitude - CONST_PATCH_SIZE)}}):
                 if entry["lat"] is None or entry["lat"] == "":
                     continue
-                if ((float(entry["lat"])-latitude)*(float(entry["lat"])-latitude) + 
-                    (float(entry["long"])-longitude)*(float(entry["long"])-longitude) < CONST_PATCH_SIZE * CONST_PATCH_SIZE):
-                    if "Noise" in entry["type"]:
-                        nn = nn + 1
-                    if entry["type"] == "Air Quality":
-                        na = na + 1
-                    if entry["type"] == "Building/Use":
-                        nb = nb + 1
-                    if entry["type"] == "Electrical":
-                        ne = ne + 1
-                    if entry["type"] == "Rodent":
-                        nrdnt = nrdnt + 1
-                    if entry["type"] == "Sewer":
-                        ns = ns + 1
-                    if entry["type"] == "Sanitaion Condition":
-                        nsttn = nsttn + 1
-                    if entry["type"] == "Street Condition":
-                        nstrt = nstrt + 1
-                    if entry["type"] == "Water System":
-                        nw = nw + 1
+                if "Noise" in entry["type"]:
+                    nn = nn + 1
+                if "Air Quality" in entry["type"]:
+                    na = na + 1
+                if entry["type"] == "Building/Use":
+                    nb = nb + 1
+                if entry["type"] == "Electrical":
+                    ne = ne + 1
+                if entry["type"] == "Rodent":
+                    nrdnt = nrdnt + 1
+                if entry["type"] == "Sewer":
+                    ns = ns + 1
+                if entry["type"] == "Sanitaion Condition":
+                    nsttn = nsttn + 1
+                if entry["type"] == "Street Condition":
+                    nstrt = nstrt + 1
+                if entry["type"] == "Water System":
+                    nw = nw + 1
             temp["na"] = na
             temp["nn"] = nn
             temp["nb"] = nb
@@ -175,20 +172,19 @@ class DataCleaner(object):
             temp["nsttn"] = nsttn
             temp["nstrt"] = nstrt
             temp["nw"] = nw
-            for entry in self.yelp.find():
+            for entry in self.yelp.find({"longitude":{"$gt": longitude - CONST_PATCH_SIZE, "$lt": longitude + CONST_PATCH_SIZE}, 
+                "latitude":{"$lt" : latitude + CONST_PATCH_SIZE, "$gt": latitude - CONST_PATCH_SIZE}}):
                 if (entry["latitude"]) is None or entry["latitude"] == "":
                     continue
-                if ((float(entry["latitude"])-latitude)*(float(entry["latitude"])-latitude) + 
-                    (float(entry["longitude"])-longitude)*(float(entry["longitude"])-longitude) < CONST_PATCH_SIZE * CONST_PATCH_SIZE):
-                    nrst = nrst + 1
-                    ar = ar + entry["rating"]
+                nrst = nrst + 1
+                ar = ar + entry["rating"]
 
-            ar = ar / nrst
+            if nrst != 0:
+                ar = ar / nrst
             temp["nrst"] = nrst
             temp["ar"] = ar
 
-            print(temp)
-            i = i + 1
+            self.features.insert(temp)
     #    # db.ablists.distinct("data-lng",{"data-lng":{$lt: "-73.95", $gt: "-73.92"}, "data-lat":{$lt : "40.82", $gt: "40.81"}})
 
 if __name__ == '__main__':
