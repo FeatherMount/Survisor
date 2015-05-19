@@ -99,3 +99,24 @@ Here is a sample record.
     "type": "Noise - Street/Sidewalk"
 }
 ```
+
+### Flask Server
+Launch AirBnB_Crawler/server.py as the server to serve request for the APP:
+
+A simple command to try it out would be 
+```
+**curl -H Content-type: application/json -X POST http://127.0.0.1:5000/messages -d '{"id":"246030", "yr":"2015", "month":"05", "day":"16", "duration":"1"}'**
+```
+
+The above command can tell the server to crawl the page that contains detail data of a listing.
+
+If you want to try to launch the server and play with it, all you need is to change the IP to the address where the server is hosted on. The server accepts input data in JSON format as what's written after  **-d**. You need to sepcify the "data-id", "move-in yy, mm, dd" and also the duration of the stay.
+
+Here's a sample json out generated from the query command above:
+
+```
+{"photo": "https://a2.muscache.com/ic/pictures/79522229/7d8647fc_original.jpg?interpolation=lanczos-none&size=x_large&output-format=progressive-jpeg&output-quality=70", "desc": "Apartment in New York, United States. The Space I&#x27;m renting 2 rooms in a 3 bedrooms apartment.  The price you see is the price for 1 room (2 ppl) If you want to book both rooms (capacity 4ppl total) you would need to go on both listings below:  https://www.airbnb.com/rooms/244547  htt...", "neighborhood": "UpperEastSide", "price": "$89", "rating": "4.5"}
+```
+
+
+It currently crawls the photo link, description, price, rating and the neighborhood of a specific listing!
