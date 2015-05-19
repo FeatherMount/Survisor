@@ -58,3 +58,7 @@ target/
 
 # System
 .DS_Store
+*~
+
+# Database
+*.json

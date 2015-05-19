@@ -16,9 +16,10 @@ def main():
     # scatter plot all latitude and longitude
     cleaner = DataCleaner()
     # use the following three function calls to check the density of the data
-    cleaner.plot311()
+    #cleaner.plot311()
     #cleaner.plotAb()
     #cleaner.plotYelp()
+    cleaner.pre_process()
 
 
 class DataCleaner(object):
@@ -103,9 +104,92 @@ class DataCleaner(object):
         plt.scatter(lat, lng, s = 2)
         show()
 
-    #def pre-processing(self):
+    def pre_process(self):
+        # obtain all the data-id first
+        i= 0
+        for data_id in self.ablists.distinct("data-id"):
+            if (i == 2):
+                break
+            list_item = self.ablists.find_one({"data-id":data_id})
+            latitude = float(list_item["data-lat"])
+            longitude = float(list_item["data-lng"])
+            temp = {}
+            temp["data-id"] = data_id
+            temp["latitude"] = latitude
+            temp["longitude"] = longitude
+
+            #air quality (na)
+            #building (nb)
+            #electrical (ne)
+            #noise (nn)
+            #rodent (nrdnt)
+            #sewer (ns)
+            #sanitaion (nsttn)
+            #street (nstrt)
+            #water (nw)
+
+            #number of restaurants (nrst)
+            #average rating (ar)
+
+            na = 0
+            nb = 0
+            ne = 0
+            nn = 0
+            nrdnt = 0
+            ns = 0
+            nsttn = 0
+            nstrt = 0
+            nw = 0
+            nrst = 0
+            ar = 0
+
+            for entry in self.complaint.find():
+                if entry["lat"] is None or entry["lat"] == "":
+                    continue
+                if ((float(entry["lat"])-latitude)*(float(entry["lat"])-latitude) + 
+                    (float(entry["long"])-longitude)*(float(entry["long"])-longitude) < CONST_PATCH_SIZE * CONST_PATCH_SIZE):
+                    if "Noise" in entry["type"]:
+                        nn = nn + 1
+                    if entry["type"] == "Air Quality":
+                        na = na + 1
+                    if entry["type"] == "Building/Use":
+                        nb = nb + 1
+                    if entry["type"] == "Electrical":
+                        ne = ne + 1
+                    if entry["type"] == "Rodent":
+                        nrdnt = nrdnt + 1
+                    if entry["type"] == "Sewer":
+                        ns = ns + 1
+                    if entry["type"] == "Sanitaion Condition":
+                        nsttn = nsttn + 1
+                    if entry["type"] == "Street Condition":
+                        nstrt = nstrt + 1
+                    if entry["type"] == "Water System":
+                        nw = nw + 1
+            temp["na"] = na
+            temp["nn"] = nn
+            temp["nb"] = nb
+            temp["ne"] = ne
+            temp["nrdnt"] = nrdnt
+            temp["ns"] = ns
+            temp["nsttn"] = nsttn
+            temp["nstrt"] = nstrt
+            temp["nw"] = nw
+            for entry in self.yelp.find():
+                if (entry["latitude"]) is None or entry["latitude"] == "":
+                    continue
+                if ((float(entry["latitude"])-latitude)*(float(entry["latitude"])-latitude) + 
+                    (float(entry["longitude"])-longitude)*(float(entry["longitude"])-longitude) < CONST_PATCH_SIZE * CONST_PATCH_SIZE):
+                    nrst = nrst + 1
+                    ar = ar + entry["rating"]
+
+            ar = ar / nrst
+            temp["nrst"] = nrst
+            temp["ar"] = ar
+
+            print(temp)
+            i = i + 1
     #    # db.ablists.distinct("data-lng",{"data-lng":{$lt: "-73.95", $gt: "-73.92"}, "data-lat":{$lt : "40.82", $gt: "40.81"}})
-    #    pass
 
 if __name__ == '__main__':
     main()
