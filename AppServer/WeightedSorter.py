@@ -1,7 +1,4 @@
-import numpy as np
 import pymongo
-import matplotlib.pyplot as plt
-from matplotlib.pyplot import show
 
 # CONST_PATCH_SIZE is an important parameter can can determine the 
 # data pre-processing efficiency
