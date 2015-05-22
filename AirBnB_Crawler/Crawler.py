@@ -65,6 +65,7 @@ class Crawler(object):
             output['rating'] = rating
             output['photo'] = photo
             output['desc'] = desc
+            output['url'] = url
             #print(output)
             return output
         except:
