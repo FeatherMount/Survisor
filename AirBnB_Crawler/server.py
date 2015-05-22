@@ -11,6 +11,7 @@ def crawl_one():
         return "Hello"
     elif request.method == 'POST':
         req = request.get_json()
+        print(req)
         crawler = Crawler()
         currDate = datetime.date(int(req['yr']), int(req['month']), int(req['day']))
         duration = datetime.timedelta(days=int(req['duration']))
