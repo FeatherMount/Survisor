@@ -243,5 +243,5 @@ Returns:
 }
 ```
 
-This is for use of page 2 of the Android application. Activity on Page 2 makes a GET request to the heroku server and render the page. 
+This is for use of page 3 of the Android application. Activity on Page 2 makes a GET request to the heroku server and render the page. 
 
